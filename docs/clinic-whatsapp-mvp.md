@@ -61,3 +61,25 @@ https://<API_HOST>/webhooks/whatsapp/<WHATSAPP_WEBHOOK_PATH_SECRET>
 - WhatsApp content is stored in the CRM database and can contain health data.
 - Do not enable LLM analysis of patient message bodies until the intended data
   processing and access controls have been reviewed.
+
+## Clinic onboarding difference
+
+This fork intentionally skips the upstream Context.dev/research-key gate. The
+workspace onboarding is still required, but the CRM UI is usable without a
+person-enrichment provider. This is deliberate for patient/privacy safety.
+
+## Vercel MVP deployment
+
+Only two projects are needed for the first test:
+
+1. **API** — root directory `apps/api`.
+2. **App** — root directory `apps/app`.
+
+The separate agent deployment can remain absent until follow-up automation is
+introduced.
+
+The API production build applies Prisma migrations automatically when a direct
+database URL is available. If `DATABASE_URL` is pooled, set
+`DIRECT_DATABASE_URL` to the unpooled connection string.
+
+Set `CRM_TELEMETRY_DISABLED=1` on both projects.
