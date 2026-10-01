@@ -96,3 +96,10 @@ Keep `WHATSAPP_TEST_ALLOWLIST` populated for the whole MVP validation. Events
 from other customers are acknowledged with HTTP 200 but are not filed as
 contacts or activities. Remove the allowlist only after the deployment,
 access-control and privacy posture are deliberately approved for live traffic.
+
+## Cron jobs
+
+The clinic MVP intentionally emits no Vercel Cron jobs from the API Build Output.
+Mailbox/rates/retention/archive schedules are deferred until those features are
+explicitly enabled. This keeps the first deployment quiet and avoids unnecessary
+background invocations while WhatsApp ingestion is being validated.
