@@ -72,8 +72,11 @@ person-enrichment provider. This is deliberate for patient/privacy safety.
 
 Only two projects are needed for the first test:
 
-1. **API** — root directory `apps/api`.
-2. **App** — root directory `apps/app`.
+1. **API** — repository root (leave Root Directory blank), Framework **Other**,
+   Build Command: `bun apps/api/scripts/build-func.mjs`. Leave Output Directory
+   on automatic/default; the script emits Build Output API v3 into
+   `.vercel/output`.
+2. **App** — Root Directory `apps/app`, Framework **Next.js**.
 
 The separate agent deployment can remain absent until follow-up automation is
 introduced.
