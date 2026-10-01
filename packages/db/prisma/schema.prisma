@@ -365,6 +365,12 @@ model Contact {
 
   socialsCheckedAt DateTime?
 
+  // WhatsApp identity. userId is Meta's BSUID and is the stable identifier
+  // when phone numbers are hidden by username/privacy settings.
+  whatsappUserId       String? @unique
+  whatsappParentUserId String?
+  whatsappUsername     String?
+
   enrichmentStatus EnrichmentStatus @default(PENDING)
   enrichedAt       DateTime?
   enrichmentError  String?
@@ -398,6 +404,8 @@ model Contact {
   @@unique([email], map: "contact_email_active_key", where: { archivedAt: null })
   @@index([companyId])
   @@index([ownerId])
+  @@index([whatsappParentUserId])
+  @@index([whatsappUsername])
   @@index([lastActivityAt])
   @@index([archivedAt])
   @@map("contact")

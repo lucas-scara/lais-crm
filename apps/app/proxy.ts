@@ -2,12 +2,7 @@ import { AUTH_COOKIE_PREFIX } from "@crm/auth/cookies";
 import { getSessionCookie } from "better-auth/cookies";
 import { type NextRequest, NextResponse } from "next/server";
 import { isMarketing } from "@/lib/env";
-import {
-	ONBOARDING_PATH,
-	RESEARCH_PATH,
-	readResearchGate,
-	readWorkspaceGate,
-} from "@/lib/onboarding";
+import { ONBOARDING_PATH, RESEARCH_PATH, readWorkspaceGate } from "@/lib/onboarding";
 import { workspaceUrl } from "@/lib/workspace-url";
 
 const LANDING_PATH = "/";
@@ -37,19 +32,16 @@ export async function proxy(request: NextRequest) {
 
 	if (isUngated(pathname)) return NextResponse.next();
 
-	// Both answers, every time, and concurrently — so the gate costs one round
-	// trip rather than two, and neither answer can be stale.
-	const [workspace, research] = await Promise.all([
-		readWorkspaceGate(request),
-		readResearchGate(request),
-	]);
+	// Clinic installs deliberately do not require the generic person-research key.
+	// Patient contacts must not be blocked behind, or automatically sent through,
+	// an external enrichment workflow.
+	const workspace = await readWorkspaceGate(request);
 
 	if (workspace.gate === "required") return sendTo(ONBOARDING_PATH, request);
-	if (research === "required") return sendTo(RESEARCH_PATH, request);
 
-	const settled = workspace.gate === "settled" && research === "settled";
-
-	if (!settled || !workspace.slug) return NextResponse.next();
+	if (workspace.gate !== "settled" || !workspace.slug) {
+		return NextResponse.next();
+	}
 
 	return sendTo(appPath(pathname, workspace.slug), request);
 }
