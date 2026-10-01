@@ -103,3 +103,8 @@ The clinic MVP intentionally emits no Vercel Cron jobs from the API Build Output
 Mailbox/rates/retention/archive schedules are deferred until those features are
 explicitly enabled. This keeps the first deployment quiet and avoids unnecessary
 background invocations while WhatsApp ingestion is being validated.
+
+## CI status
+
+GitHub Actions is enabled on the fork. Pull-request updates run the repository's
+migration, type-check, lint and test workflow before merge.
