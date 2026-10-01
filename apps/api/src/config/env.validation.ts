@@ -147,6 +147,10 @@ export class EnvironmentVariables {
 
 	@IsOptional()
 	@IsString()
+	WHATSAPP_TEST_ALLOWLIST?: string;
+
+	@IsOptional()
+	@IsString()
 	CRM_TELEMETRY_DISABLED?: string;
 }
 

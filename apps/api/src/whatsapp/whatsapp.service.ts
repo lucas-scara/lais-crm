@@ -35,6 +35,7 @@ export class WhatsAppService {
 	private readonly logger = new Logger(WhatsAppService.name);
 	private readonly wabaId: string | undefined;
 	private readonly phoneNumberId: string | undefined;
+	private readonly testAllowlist: ReadonlySet<string>;
 
 	constructor(
 		@InjectDatabase() private readonly db: Db,
@@ -42,6 +43,9 @@ export class WhatsAppService {
 	) {
 		this.wabaId = config.get("WHATSAPP_WABA_ID", { infer: true });
 		this.phoneNumberId = config.get("WHATSAPP_PHONE_NUMBER_ID", { infer: true });
+		this.testAllowlist = parseAllowlist(
+			config.get("WHATSAPP_TEST_ALLOWLIST", { infer: true }),
+		);
 	}
 
 	async receive(input: unknown): Promise<void> {
@@ -114,6 +118,13 @@ export class WhatsAppService {
 			return;
 		}
 
+		if (!this.isAllowedForMvp(identity)) {
+			this.logger.log({
+				message: "Ignored WhatsApp message outside MVP test allowlist",
+			});
+			return;
+		}
+
 		const author = await this.db.user.findFirst({
 			orderBy: { createdAt: "asc" },
 			select: { id: true },
@@ -169,6 +180,18 @@ export class WhatsAppService {
 				data: { lastActivityAt: occurredAt },
 			});
 		});
+	}
+
+	private isAllowedForMvp(identity: WhatsAppIdentity): boolean {
+		if (this.testAllowlist.size === 0) return true;
+
+		const candidates = [
+			identity.userId,
+			identity.phone,
+			identity.phone?.replace(/\D/g, ""),
+		].filter((value): value is string => Boolean(value));
+
+		return candidates.some((value) => this.testAllowlist.has(value));
 	}
 
 	private async findOrCreateContact(
@@ -377,4 +400,19 @@ function isDualhookPing(input: unknown): boolean {
 	if (!input || typeof input !== "object") return false;
 	const record = input as Record<string, unknown>;
 	return record.event === "dualhook.test_ping";
+}
+
+function parseAllowlist(value?: string): ReadonlySet<string> {
+	if (!value?.trim()) return new Set();
+
+	const entries = value
+		.split(",")
+		.map((entry) => entry.trim())
+		.filter(Boolean)
+		.flatMap((entry) => {
+			const digits = entry.replace(/\D/g, "");
+			return digits.length >= 8 ? [entry, digits, `+${digits}`] : [entry];
+		});
+
+	return new Set(entries);
 }
