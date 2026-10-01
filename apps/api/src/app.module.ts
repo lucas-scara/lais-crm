@@ -36,6 +36,7 @@ import { TelemetryModule } from "./telemetry/telemetry.module";
 import { TrackingModule } from "./tracking/tracking.module";
 import { TrpcModule } from "./trpc/trpc.module";
 import { UsersModule } from "./users/users.module";
+import { WhatsAppModule } from "./whatsapp/whatsapp.module";
 import { WorkspaceModule } from "./workspace/workspace.module";
 
 @Module({
@@ -77,6 +78,7 @@ import { WorkspaceModule } from "./workspace/workspace.module";
 		BackfillModule,
 		TelemetryModule,
 		TrackingModule,
+		WhatsAppModule,
 		ArchiveModule,
 		SavedViewsModule,
 	],

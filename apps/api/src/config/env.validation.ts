@@ -125,6 +125,28 @@ export class EnvironmentVariables {
 
 	@IsOptional()
 	@IsString()
+	@MinLength(16, {
+		message: "WHATSAPP_WEBHOOK_VERIFY_TOKEN must be at least 16 characters.",
+	})
+	WHATSAPP_WEBHOOK_VERIFY_TOKEN?: string;
+
+	@IsOptional()
+	@IsString()
+	@MinLength(24, {
+		message: "WHATSAPP_WEBHOOK_PATH_SECRET must be at least 24 characters.",
+	})
+	WHATSAPP_WEBHOOK_PATH_SECRET?: string;
+
+	@IsOptional()
+	@IsString()
+	WHATSAPP_WABA_ID?: string;
+
+	@IsOptional()
+	@IsString()
+	WHATSAPP_PHONE_NUMBER_ID?: string;
+
+	@IsOptional()
+	@IsString()
 	CRM_TELEMETRY_DISABLED?: string;
 }
 
